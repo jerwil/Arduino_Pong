@@ -16,13 +16,14 @@ BSD license, check license.txt for more information
 All text above, and the splash screen must be included in any redistribution
 *********************************************************************/
 
-const int l_up_button = 2;
-const int l_down_button = 9;
-const int r_up_button = 3;
-const int r_down_button = 5;
+// Button Pin Setup
+const int l_up_button = 2; //Left player up button pin
+const int l_down_button = 9; //Left player down button pin
+const int r_up_button = 3; //Right player up button pin
+const int r_down_button = 5; //Right player down button pin
 
 
-//Screen Parameters
+//Screen Size Parameters
 int x_pixels = 128;
 int y_pixels = 32;
 
@@ -40,14 +41,19 @@ int speakerPin = 8;
 #define OLED_RESET 4
 Adafruit_SSD1306 display(OLED_RESET);
 
+// Ball velocities:
 int x_vel = 1;
 int y_vel = 1;
+
+// Ball position:
 int x_pos = 5;
 int y_pos = 32;
 
+// Paddle positions:
 int l_pos = 0;
 int r_pos = 0;
 
+// Player scores
 int l_score = 0;
 int r_score = 0;
 
@@ -96,6 +102,7 @@ void setup()   {
   display.display();
   // Clear the buffer.
   display.clearDisplay();
+  // Display Arduino Pong splashscreen
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(display.width()/2-20,0);
@@ -146,21 +153,24 @@ void loop() {
   x_pos+=x_vel;
   y_pos+=y_vel;
 
-  // Draw elements to display:
+  // Draw pong elements to display:
   display.clearDisplay();
   display.drawPixel(x_pos, y_pos, WHITE);
   display.fillRect(0, l_pos, paddle_width, paddle_height, WHITE);
   display.fillRect(x_pixels-paddle_width ,r_pos, paddle_width, paddle_height, WHITE);
 
+  // Display scores
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(display.width()/4,0);
   display.println(l_score);
   display.setCursor(display.width()*3/4,0);
   display.println(r_score);
-  
+
+  // Display all elements
   display.display();
 
+   // Check for ball bouncing off paddles:
   if (ball_on_right_paddle()){
     x_vel = -x_vel;
     tone(speakerPin, 300, 100);
@@ -172,6 +182,7 @@ void loop() {
 }
 
 bool ball_on_right_paddle(){
+// If ball is heading towards paddle and is at the surface of paddle between the top and bottom of the paddle, then it's a hit
 return(x_pos == x_pixels-paddle_width-1 && y_pos >= r_pos && y_pos <= (r_pos + paddle_height) && x_vel == 1);
 }
 
